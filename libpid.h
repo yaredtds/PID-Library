@@ -17,16 +17,11 @@ typedef struct
 	double r;
 	double ek;
 	double ekm1;
-	
 	double ck;
 	double ckm1;
-		
 	double esk;
 	double eskm1;
-	
-	
 	double feedback;	/*process_variable; //feedBack variable value*/
-	
 	
 	double max_output;
 	double min_output;
