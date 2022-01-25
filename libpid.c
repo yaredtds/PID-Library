@@ -41,35 +41,26 @@ double actuator_limit(pidc_t *pidp,double ckp);
 
 void initialize(pidc_t *pidp,double _ckm1, double _ekm1)
 {
-
 	pidp->ckm1=_ckm1;
-
 	pidp->eskm1=_ekm1;
 	pidp->ekm1=_ekm1;
-
 	pidp->esk = actuator_limit(pidp, 0.0);
-
 }
 
 void set_feedback(pidc_t *pidp, double value)
 {
-
 	pidp->feedback = value;
-
 }
 
 double get_feedback(pidc_t *pidp)
 {
-
 	return pidp->feedback;
 }
 
 /*PID Control Algorithm Source Code*/
 void set_setpoint(pidc_t *pidp,double set_point)
 {
-
 	pidp->r = input_filter(pidp, set_point);
-
 }
 
 double get_setpoint(pidc_t *pidp)
@@ -92,11 +83,8 @@ void set_actuator_limit(pidc_t *pidp,double minima,double maxima)
 double input_filter(pidc_t *pidp, double set_point)
 {
 	if (set_point > pidp->max_input){
-
 		return pidp->max_input; 
-
 	}else if(set_point < pidp->min_input){
-
 		return pidp->min_input;
 	}else{
 		return  set_point;
@@ -105,25 +93,20 @@ double input_filter(pidc_t *pidp, double set_point)
 
 double actuator_limit(pidc_t *pidp,double ckp)
 {
-
 	if( ckp > pidp->max_output){
 		/* return Negative error */
 		return  (pidp->max_output - ckp);
-
 	}else if (ckp < pidp->min_output){
 		/* return Positive error */
 		return (pidp->min_output - ckp);
 	}else{
-
 		return 0;
 	}
-
 }
 
-double proportional(pidc_t *pidp, double P, double b){
-
+double proportional(pidc_t *pidp, double P, double b)
+{
 	double epk = pidp->ek + (b - 1)*pidp->r;
-
 	return	P * epk;
 }
 
@@ -138,47 +121,37 @@ c, char method)
 
 	switch (method)
 	{
-
 	case(Forward):
-
 		cdk = (1- nts)* pidp->ckm1 + dn*derr;
 		break;			
 	case(Backward):
-
 		cdk = (Td*pidp->ckm1 + dn*derr)/(Td + nts);
 		break;
-
 	case(Trapezoidal):
-
 		cdk = ( (Td - (nts*0.5))*pidp->ckm1 + dn*derr )/(Td + nts*0.5);
 		break;
-
 	};
-
+	
 	return cdk;			 
 }
 
 double integral(pidc_t *pidp, double K, double Ti, double Tt, double Ts, char 
 method)
 {
-
 	double cik = 0;
 	double eik = pidp->ek;		
 
-	switch(method){
-
+	switch(method)
+	{
 	case(Forward):
-
 		cik = pidp->ckm1 + Ts*((pidp->ekm1*K)/Ti  +  pidp->eskm1/Tt);
-
+		break;
 	case(Backward):
-
 		cik = pidp->ckm1 + Ts*((eik*K)/Ti  +  pidp->esk/Tt);
-
+		break;
 	case(Trapezoidal):
-
 		cik = pidp->ckm1 + 0.5*Ts*(K*(eik + pidp->ekm1)/Ti - (pidp->esk + pidp->eskm1)/Tt);
-
+		break;
 	};
 
 	return cik;
@@ -200,20 +173,14 @@ b,double c, double Ts, char integral_type, char filter_type)
 	pidp->ek = pidp->r - get_feedback(pidp);
 
 	double p_term = proportional(pidp, Kp, b);  
-
 	double d_term = derivative(pidp, Kp, Td, Ts, N, c, filter_type);
-
 	double i_term = integral(pidp, Kp, Ti, Tt, Ts, integral_type); 
-
 	double ck = p_term + i_term + d_term;//
 
 	/* updating controller parameters*/
-
 	pidp->eskm1 = pidp->esk;	
 	pidp->esk = actuator_limit(pidp, ck);
-
 	pidp->ekm1 = pidp->ek;
-
 	pidp->ckm1 = pidp->ck;
 	pidp->ck = ck + pidp->esk;
 
