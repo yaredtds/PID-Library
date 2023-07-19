@@ -52,8 +52,6 @@ double get_setpoint(pidc_t *pidp);
 void set_actuator_limit(pidc_t *pidp,double minima,double maxima);
 void set_input_range(pidc_t *pidp,double minima,double maxima);
 
-void auto_tune(par_t *parp, double (*fbp)(void), void (*rtp)(double ref), double Tmax, double Ts );
-
 /*
 #ifdef __cplusplus
 }
